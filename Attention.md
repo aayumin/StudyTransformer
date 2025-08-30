@@ -48,20 +48,19 @@
     - 하나씩 순서대로 할 필요가 없기 때문에, 모든 단어를 한꺼번에 병렬적으로 처리할 수 있습니다.
   - **중요한 정보에 집중**할 수 있어, **기억을 효율적으로 활용**할 수 있습니다.
 
-<img width="1228" height="792" alt="image" src="https://github.com/user-attachments/assets/7def7333-7db0-4f27-9c2f-298b4f63e04f" />
+<img width="70%" height="70%" alt="image" src="https://github.com/user-attachments/assets/7def7333-7db0-4f27-9c2f-298b4f63e04f" />
 
 </br> </br> 
 
 
-### 🔍 RNN 과의 비교
+### 📊 RNN 과의 비교
 
 - RNN 은 각 단어를 **앞에서부터 하나씩 차례대로** 처리한다.
   - 즉 앞의 단어가 처리되어야, 그 다음 단어를 처리할 수 있다.
 - RNN 은 **장기 의존성 문제**가 자주 나타난다.
   - 순차적으로 내부 상태를 업데이트 하면서 각 단어를 처리하기 때문에, 가장 최근에 본 단어는 정보가 많이 남아있지만, 아주 예전에 본 단어는 시간이 갈수록 희미해진다.
 
-<img width="972" height="731" alt="image" src="https://github.com/user-attachments/assets/d8a45f47-0c82-4450-bcb5-8f72f4f62293" />
-
+<img width="70%" height="70%" alt="image" src="https://github.com/user-attachments/assets/d8a45f47-0c82-4450-bcb5-8f72f4f62293" />
 
 </br> </br>   </br> 
 
@@ -69,25 +68,30 @@
 
 ## 2. Attention의 구체적인 동작 방식
 
-- Attention 메커니즘은 크게 **세 가지**로 나눌 수 있습니다:
-  1. **Query (Q)**: 우리가 찾고자 하는 정보. 예를 들어, "번역하고 싶은 단어"가 될 수 있습니다.
-  2. **Key (K)**: 다른 데이터의 정보. 예를 들어, 번역하려는 문장의 각 단어가 될 수 있습니다.
-  3. **Value (V)**: 실제로 계산에 사용되는 값. Key에 해당하는 데이터의 값들이 됩니다.
+<img width="381" height="232" alt="image" src="https://github.com/user-attachments/assets/87df9b3d-d6f4-471c-a237-620788edb8fa" />
+
+- Attention 메커니즘의 입력은 크게 **세 가지**로 나눌 수 있습니다:
+  1. **Query (Q)**: 우리가 현재 보고 있는 정보. 예를 들어, "번역하고 싶은 단어"가 될 수 있습니다.
+  2. **Key (K)**: 다른 데이터의 정보. 예를 들어, 문장을 구성하는 각 단어들이 될 수 있습니다.
+  3. **Value (V)**: 실제로 계산에 사용되는 값.
+
+<img width="745" height="326" alt="image" src="https://github.com/user-attachments/assets/58a3565e-e597-4369-8546-5d25cfeb6b7a" />
 
 - Attention은 **Query**와 **Key**의 **유사성**을 계산하여, **Value**에 가중치를 부여합니다. 이때 계산은 보통 **내적**으로 이루어집니다. 유사성이 높은 **Key**에 해당하는 **Value**는 더 큰 가중치를 부여받고, 유사성이 낮은 것은 낮은 가중치를 받습니다.
 
-- **Self-Attention**: 이는 **자기 자신에 대한 주의**입니다. 예를 들어, 문장 내에서 각 단어가 다른 단어들과 얼마나 관계가 있는지를 계산하여, 각 단어에 주어지는 "주의"의 정도를 결정합니다.
+</br> </br>   </br> 
+
+### 🔍 Attention 차근차근 알아보기
+
+
+</br> </br>   </br> 
 
 ---
 
-용어 정리
+## 3. Attention의 종류
 
-- **Query (Q)**: 원하는 정보나 질문을 나타내는 벡터.
-- **Key (K)**: 입력 데이터에서 정보의 키워드나 특징을 나타내는 벡터.
-- **Value (V)**: Key에 해당하는 실제 값.
-- **Score**: Query와 Key 간의 유사도를 나타내는 값. 보통 **내적**이나 **코사인 유사도**를 사용하여 계산.
-- **Softmax**: Score를 확률 값으로 변환하여 가중치를 계산합니다. 각 가중치는 합이 1이 됩니다.
-- **Attention Weight**: Value에 곱해지는 가중치. 이 가중치가 높을수록 해당 정보는 더 중요하다는 뜻입니다.
+- **Self-Attention**: 이는 **자기 자신에 대한 주의**입니다. 예를 들어, 문장 내에서 각 단어가 다른 단어들과 얼마나 관계가 있는지를 계산하여, 각 단어에 주어지는 "주의"의 정도를 결정합니다.
+
 
 </br> </br>
 
