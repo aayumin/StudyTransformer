@@ -5,10 +5,30 @@
 ## 0. 사전지식
 
 - **Feature Vector**란, 특정 데이터의 **특징을 숫자로 표현한 벡터**입니다. 예를 들어, 이미지에서는 각 픽셀의 값들이 Feature Vector로 표현될 수 있고, 텍스트에서는 단어들의 수치화된 표현이 Feature Vector가 됩니다.
+  - 예를 들어, 얼굴을 묘사하는 Feature Vector 를 만든다고 하면, [눈썹의 길이(cm), 쌍커풀 유무(0 또는 1), 코의 높이(cm), 턱선의 각도(degree)] 를 계산해서 길이가 4인 Vector를 만들 수 있습니다.
+  - 이때 위의 Feature Vector 의 실제 값으로 [4.2,  1,  2.1,  135], [3.8,  0,  2.3,  140] 등이 있을 수 있습니다.
+  
 - **두 벡터 간의 유사성**을 측정하는 방법으로는 여러 가지가 있습니다:
   - **내적 (Dot Product)**: 두 벡터의 내적은 유사성을 간단하게 측정할 수 있는 방법입니다. 내적이 크면 두 벡터의 방향이 비슷하고, 작으면 방향이 다르다는 것을 의미합니다.
   - **코사인 유사도 (Cosine Similarity)**: 두 벡터 간의 각도를 계산하여, 1이면 완전히 같은 방향, 0이면 직각, -1이면 반대 방향을 나타냅니다.
 
+- **은닉 레이어 (Hidden layer)** 는 입력과 출력 사이에서 데이터의 특징을 추출하고 표현하는 신경망의 중간 단계입니다.
+
+  
+- **Query, Key, Value** 는 Attention 메커니즘을 이해하기 위해 필수적인 부분입니다.
+  - Key 와 Value 는 하나의 쌍을 이룹니다. (예를 들면, key가 상품명이고 value 는 상품의 가격)
+  - query 는 요청이나 질문의 느낌으로 이해하면 됩니다.
+  - 비유하자면, [고래밥, 포테이토칩, 콘칩, 칸쵸] 등의 상품명을 나타내는 key가 있고 각각에 대응하는 상품가격 value가 있을 때 "홈런볼"이라는 query가 들어왔다고 가정해보자.
+  - 이때 "홈런볼"이라는 query를 모든 key와 비교해서 유사도를 계산한다.
+  - 만약 똑같이 초콜릿 맛이 나는 "홈런볼"과 "칸쵸"가 유사도가 가장 높았고, "포테이토칩"과는 유사도가 가장 낮았다고 해보자.
+  - 그러면 최종 결과값으로 홈런볼의 value(여기서는 가격)를 결정할 때, "칸쵸"라는 key에 대응되는 "2500원"이라는 value 가 가장 많이 반영되고, "포테이토칩"의 가격은 가장 적게 반영된다.
+
+- **Softmax 연산**은 임의의 여러 값들이 있을 때 이 값들을 확률처럼 표현해주는 연산을 말합니다.
+  - Softmax 특징으로는 변환된 각각의 값들은 모두 0~1 사이의 값을 가집니다. (확률처럼)
+  - 변환된 모든 값들을 합하면 정확히 1.0 이 됩니다. (확률처럼)
+  - 원래의 값에서의 대소 관계는 변환된 후에도 대소 관계가 그대로 유지됩니다.
+  - 예를 들면, 어떤 이미지를 [고양이, 강아지, 사자] 중에서 어디에 속하는지 예측한 결과값이 원래 [2, 1, 0.1] 이라면 Softmax 를 적용하여 변환된 값은 [0.66, 0.24, 0.1] 이 된다.
+  - 그러면 그 이미지가 고양이일 확률은 66%, 강아지일 확률은 24%, 사자일 확률은 10% 라고 해석할 수 있다.
 
 </br> </br>
 
@@ -81,7 +101,47 @@
 
 </br> </br>   </br> 
 
+
 ### 🔍 Attention 차근차근 알아보기
+
+
+Step 1️⃣: 어텐션 스코어 계산
+```text
+각 인코더 은닉 상태와 디코더 현재 상태를 비교 → 얼마나 중요한지 "점수"로 매김
+```
+- 수식: `score = dot(Decoder_t, Encoder_i)`
+
+[이미지 part: 디코더 상태와 인코더 상태를 선으로 연결하고, 유사도를 수치로 나타낸 그래프]
+
+Step 2️⃣: 소프트맥스(SOFTMAX)
+
+```text
+스코어 → 확률화
+```
+- 값들을 0~1 사이로 바꾸고 **총합이 1이 되도록 조정**
+
+Step 3️⃣: 컨텍스트 벡터 계산
+
+```text
+각 인코더 은닉 상태 × 가중치 → 모두 더함 (가중합)
+```
+- 중요도가 높은 단어의 정보는 **더 크게 반영**
+
+Step 4️⃣: 디코더 은닉 상태와 연결
+
+```text
+디코더 상태와 컨텍스트 벡터를 이어 붙임 (Concatenate)
+```
+- 정보를 확장시켜 **출력층에 더 많은 정보 제공**
+
+
+Step 6️⃣: 예측
+
+```text
+다음 단어를 예측
+```
+- 기존 RNN보다 **더 문맥에 맞는 단어**를 예측할 수 있음
+
 
 
 </br> </br>   </br> 
@@ -103,23 +163,25 @@
 import torch
 import torch.nn.functional as F
 
-# Query, Key, Value 예시
-Q = torch.tensor([[1, 0], [0, 1]], dtype=torch.float32)  # Query 벡터
-K = torch.tensor([[1, 0], [1, 1]], dtype=torch.float32)  # Key 벡터
-V = torch.tensor([[1, 1], [0, 0]], dtype=torch.float32)  # Value 벡터
+# 가상의 Q, K, V 벡터 (배치 크기: 1, 시퀀스 길이: 4, 차원: 5)
+Q = torch.randn(1, 1, 5)   # (batch, query_len, dim)
+K = torch.randn(1, 4, 5)   # (batch, seq_len, dim)
+V = torch.randn(1, 4, 5)   # (batch, seq_len, dim)
 
-# Query와 Key의 내적을 계산하여 점수 계산
-scores = torch.matmul(Q, K.T)  # Q와 K의 내적
-print("Scores:", scores)
+# 1) Query와 Key의 내적을 계산하여 점수 계산
+scores = torch.matmul(Q, K.transpose(-2, -1)) / torch.sqrt(torch.tensor(5.0))
 
-# Softmax를 사용하여 가중치 계산
+# 2) Softmax 로 값을 확률화
 attention_weights = F.softmax(scores, dim=-1)
-print("Attention Weights:", attention_weights)
 
-# Attention 가중치를 Value에 곱해 최종 결과 계산
+# 3) Attention weights 와 values 를 곱해서 최종 결과 계산
 output = torch.matmul(attention_weights, V)
+
+print("Attention Weights:", attention_weights)
 print("Output:", output)
 ```
+
+
 
 이 코드는 self-attention을 계산하는 간단한 예시입니다.
 
