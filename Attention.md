@@ -27,8 +27,8 @@
   - Softmax 특징으로는 변환된 각각의 값들은 모두 0~1 사이의 값을 가집니다. (확률처럼)
   - 변환된 모든 값들을 합하면 정확히 1.0 이 됩니다. (확률처럼)
   - 원래의 값에서의 대소 관계는 변환된 후에도 대소 관계가 그대로 유지됩니다.
-  - 예를 들면, 어떤 이미지를 [고양이, 강아지, 사자] 중에서 어디에 속하는지 예측한 결과값이 원래 [2, 1, 0.1] 이라면 Softmax 를 적용하여 변환된 값은 [0.66, 0.24, 0.1] 이 된다.
-  - 그러면 그 이미지가 고양이일 확률은 66%, 강아지일 확률은 24%, 사자일 확률은 10% 라고 해석할 수 있다.
+  - 예를 들면, 어떤 이미지를 [고양이, 강아지, 사자] 중에서 어디에 속하는지 예측한 결과값이 원래 [2, 1, 0.1] 이라면 Softmax 를 적용하여 변환된 값은 [0.66, 0.24, 0.1] 이 됩니다.
+  - 그러면 그 이미지가 고양이일 확률은 66%, 강아지일 확률은 24%, 사자일 확률은 10% 라고 해석할 수 있습니다.
 
 </br> </br>
 
@@ -97,48 +97,62 @@
 
 <img width="745" height="326" alt="image" src="https://github.com/user-attachments/assets/58a3565e-e597-4369-8546-5d25cfeb6b7a" />
 
-- Attention은 **Query**와 **Key**의 **유사성**을 계산하여, **Value**에 가중치를 부여합니다. 이때 계산은 보통 **내적**으로 이루어집니다. 유사성이 높은 **Key**에 해당하는 **Value**는 더 큰 가중치를 부여받고, 유사성이 낮은 것은 낮은 가중치를 받습니다.
+- Attention은 **Query**와 **Key**의 **유사성**을 계산하여, 해당 Key와 대응되는 **Value**에 유사한 정도만큼 가중치를 부여합니다. 유사성이 높은 **Key**에 해당하는 **Value**는 더 큰 가중치를 부여받고, 유사성이 낮은 것은 낮은 가중치를 받습니다.
 
 </br> </br>   </br> 
 
 
 ### 🔍 Attention 차근차근 알아보기
 
-
-Step 1️⃣: 어텐션 스코어 계산
+ </br> 
+ 
+Step 1️⃣: 유사한 정도에 따라 Attention Score 계산
 ```text
-각 인코더 은닉 상태와 디코더 현재 상태를 비교 → 얼마나 중요한지 "점수"로 매김
+현재 관심 있는 query 단어를 나머지 단어들의 key와 비교 → 얼마나 유사하고 중요한지 "점수"로 매김
 ```
-- 수식: `score = dot(Decoder_t, Encoder_i)`
 
-[이미지 part: 디코더 상태와 인코더 상태를 선으로 연결하고, 유사도를 수치로 나타낸 그래프]
+```python
+for i in range(num_words_in_sentence):
+  attention_score[i] = calculate_similarity(query, key[i])
+```
 
-Step 2️⃣: 소프트맥스(SOFTMAX)
+- 아래 그림에서 "it_"이 query 인 상태이다.
+  
+<img width="40%" height="40%" alt="image" src="https://github.com/user-attachments/assets/47bb585a-2bce-449f-a55c-c8667160f13c" />
+ 
+</br> 
+
+Step 2️⃣: 소프트맥스(SOFTMAX) 적용
 
 ```text
-스코어 → 확률화
+다양한 값을 가지고 있는 Attention Score → Softmax 적용 → 확률화된 Attention Weight
 ```
+
 - 값들을 0~1 사이로 바꾸고 **총합이 1이 되도록 조정**
+ 
+</br> 
 
-Step 3️⃣: 컨텍스트 벡터 계산
+Step 3️⃣: 최종 값인 Attention Value 계산
 
 ```text
-각 인코더 은닉 상태 × 가중치 → 모두 더함 (가중합)
+각 단어들의 value × 각 단어의 가중치 → 모두 더함 (가중합)
+   ==>  최종 값 계산 ("Attention Value" 또는 "Context Vector" 라고 부른다.)
 ```
+- 여기서 가중치는 (앞에서 유사도를 계산하고 softmax를 적용해서) 확률화된 attention weight 를 의미함.
 - 중요도가 높은 단어의 정보는 **더 크게 반영**
+ 
+</br> 
 
-Step 4️⃣: 디코더 은닉 상태와 연결
+<img width="60%" height="60%" alt="image" src="https://github.com/user-attachments/assets/9aaa381b-5c1d-40e3-bc59-6f6bb5ab96b4" />
+
+- 위 그림은 가볍게 참고만 하기.
+ 
+</br> 
+
+Step 4️⃣: 예측
 
 ```text
-디코더 상태와 컨텍스트 벡터를 이어 붙임 (Concatenate)
-```
-- 정보를 확장시켜 **출력층에 더 많은 정보 제공**
-
-
-Step 6️⃣: 예측
-
-```text
-다음 단어를 예측
+지금까지 계산된 Attention Value 를 잘 활용하여 다음 단어를 예측
 ```
 - 기존 RNN보다 **더 문맥에 맞는 단어**를 예측할 수 있음
 
@@ -148,14 +162,7 @@ Step 6️⃣: 예측
 
 ---
 
-## 3. Attention의 종류
 
-- **Self-Attention**: 이는 **자기 자신에 대한 주의**입니다. 예를 들어, 문장 내에서 각 단어가 다른 단어들과 얼마나 관계가 있는지를 계산하여, 각 단어에 주어지는 "주의"의 정도를 결정합니다.
-
-
-</br> </br>
-
----
 
 ## 3. 파이썬 예시 코드
 
@@ -163,28 +170,22 @@ Step 6️⃣: 예측
 import torch
 import torch.nn.functional as F
 
-# 가상의 Q, K, V 벡터 (배치 크기: 1, 시퀀스 길이: 4, 차원: 5)
-Q = torch.randn(1, 1, 5)   # (batch, query_len, dim)
-K = torch.randn(1, 4, 5)   # (batch, seq_len, dim)
-V = torch.randn(1, 4, 5)   # (batch, seq_len, dim)
+# 가상의 Q, K, V 벡터 (샘플 개수: 1, 문장에 포함된 단어의 수: 4, 각 단어를 표현하는 Feature Vector의 차원: 5)
+QUERY = torch.randn(1, 1, 5)   # (1, 1, feature_dim)
+KEY = torch.randn(1, 4, 5)   # (1, sequence_length, feature_dim)
+VALUE = torch.randn(1, 4, 5)   # (1, sequence_length, feature_dim)
 
 # 1) Query와 Key의 내적을 계산하여 점수 계산
-scores = torch.matmul(Q, K.transpose(-2, -1)) / torch.sqrt(torch.tensor(5.0))
+scores = torch.matmul(QUERY, KEY.transpose(-2, -1)) / torch.sqrt(torch.tensor(feature_dim))
 
 # 2) Softmax 로 값을 확률화
 attention_weights = F.softmax(scores, dim=-1)
 
 # 3) Attention weights 와 values 를 곱해서 최종 결과 계산
-output = torch.matmul(attention_weights, V)
+output = torch.matmul(attention_weights, VALUE)
 
 print("Attention Weights:", attention_weights)
 print("Output:", output)
 ```
 
 
-
-이 코드는 self-attention을 계산하는 간단한 예시입니다.
-
-Q, K, V는 각각 Query, Key, Value 벡터를 의미하고, 이들 간의 내적을 통해 어떤 정보에 주의를 기울일지 결정합니다. 
-
-마지막으로 Softmax를 사용하여 가중치를 계산하고, 이를 Value에 곱해 최종 출력을 만듭니다.
