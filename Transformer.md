@@ -1,8 +1,8 @@
-# 🧠 Transformer Architecture 완전 정복
+# 🧠 Transformer Architecture
 
 ## 📚 목차
 
-1. Transformer는 왜 등장했을까? (배경 간략 요약)
+1. Transformer는 왜 등장했을까? 
 2. Transformer란 무엇인가?
 3. 전체 구조: Encoder & Decoder
 4. Transformer의 핵심 구성요소
@@ -12,7 +12,9 @@
     - Multi-Head Attention
     - Feed Forward Layer
     - Add & Norm (Residual + Normalization)
-5. Transformer의 효과와 현재 트렌드
+5. Transformer 성능 및 트렌드
+
+</br> </br>
 
 ---
 
@@ -22,6 +24,8 @@
 - 하지만 이 방식은 **입력 순서를 따라가야 해서 병렬처리가 어렵고**, **긴 문장**일수록 **기억을 잃는 문제**가 있었습니다.
 - 이 문제를 해결하기 위해 **Attention Mechanism**이 등장했고,
 - 그 Attention을 구조 전체에 적용한 모델이 바로 **Transformer**입니다!
+
+</br> </br>
 
 ---
 
@@ -36,6 +40,8 @@
 - RNN: 책을 한 줄씩 순서대로 읽는 학생  
 - Transformer: 책 전체를 동시에 펼쳐놓고, 필요한 부분을 자유롭게 참고하는 학생  
 
+
+</br> </br>
 
 ---
 
@@ -58,12 +64,22 @@ Transformer는 **Encoder-Decoder** 구조를 기반으로 합니다.
 - 디코더도 여러 층으로 되어 있으며, **Self-Attention + Cross-Attention** 구조를 갖습니다.
 
 
+</br> </br>
 
-[이미지 part: 인코더-디코더 구조를 블록 다이어그램처럼 그린 그림. 입력 문장이 왼쪽에서 들어와 디코더를 거쳐 번역 결과로 나오는 모습.]
+> **이미지** 도메인에서 쓰인 Encoder-Decoder 구조
+<img width="1731" height="271" alt="image" src="https://github.com/user-attachments/assets/5417fbc8-62f1-4369-9df2-ece776f8bbfd" />
+
+> **텍스트** 도메인에서 쓰인 Encoder-Decoder 구조
+<img width="60%" height="60%" alt="image" src="https://github.com/user-attachments/assets/48590b52-cd21-4391-98d7-9b0186bd7bc9" />
+
+
+</br> </br>
 
 ---
 
 ## 🧱 4. Transformer의 구성요소
+
+</br> 
 
 ### 🔢 4-1. Positional Encoding
 > 각 단어마다 그 단어의 위치 정보까지 추가
@@ -80,11 +96,23 @@ Transformer는 단어를 한꺼번에 보기 때문에, **단어 순서 정보**
 Self-Attention은 이런 **관련성 점수**를 계산해서, **중요한 단어에 더 집중**하게 합니다.
 
 ### ↔️ 4-3 Cross-Attention
-- **Decoder**에서 사용되는 Attention  
-- Decoder가 현재까지 번역된 단어와, Encoder가 인코딩한 전체 문장을 연결  
+> Decoder가 현재 번역되는 단어와, Encoder가 인코딩한 전체 입력 문장을 연결  
 - 즉, 번역할 때 원문 문장 전체를 다시 참고  
 
 
+```python
+Self-Attention 과 Cross-Attention 의 차이
+: 입력된 영어 문장을 한국어 문장으로 번역하는 작업을 가정해봅시다. (예를 들어, "I am a student" → "나는 학생이다.")
+
+
+- Encoder 에서의 Self-Attention
+  - "I am a student."라는 문장 안에서 "student"와의 상관관계를 계산
+- Decoder 에서의 Self-Attention
+  - "나는 학생이다."라는 문장 안에서 "학생"과의 상관관계를 계산
+- Encoder와 Decoder 사이의 Cross-Attention
+  - "I am a student."라는 문장 안에서 "학생"과의 상관관계를 계산
+```
+ 
 ### 🧠 4-4. Multi-Head Attention
 > Self-Attention을 여러 번 병렬로 다양하게 수행하는 구조
 
@@ -107,22 +135,11 @@ Residual은 “원래 답안을 지우지 않고 메모를 추가”하는 것,
 Normalization은 “모든 메모의 크기를 일정하게 정리”하는 것과 같음.
 
 
----
-
-## 🎯 5. Self-Attention vs Cross-Attention
-
-| 구분             | 설명 |
-|------------------|------|
-| **Self-Attention** | 하나의 문장 내에서 단어들 간의 관계를 파악 |
-| **Cross-Attention** | 인코더 출력과 디코더 입력 간의 관계를 파악 |
-
-예:  
-- Self → "나는 학교에 간다" 안에서 단어들끼리 주고받음  
-- Cross → 원문(입력)과 번역문(출력) 사이에서 관계를 형성
+</br> </br>
 
 ---
 
-## 📈 6. Transformer의 효과와 트렌드
+## 📈 6. Transformer 성능 및 트렌드
 
 ### ✅ 성능 및 효과
 - **빠름**: 병렬 연산 덕분에 GPU 성능 활용이 뛰어남
