@@ -6,7 +6,7 @@
 2. Transformer의 확장: 다양한 도메인 적용
 3. 🌐 언어 모델 시리즈
    - BERT
-   - GPT 시리즈
+   - GPT
 4. 🖼️ 이미지 모델 (Vision Transformer)
 5. 🧠 멀티모달 모델
    - CLIP
@@ -14,6 +14,9 @@
    - Gemini / GPT-4o
 6. 💡 용어 정리
 7. 🗓️ 연도별 주요 모델 요약
+
+
+</br> </br> </br>
 
 ---
 
@@ -24,39 +27,52 @@ RNN은 순차적으로 데이터를 처리했기 때문에 속도와 정보 전�
 
 Transformer는 **모든 단어를 동시에 고려하는 Attention** 구조를 통해 병렬처리 가능하고, 긴 문장도 잘 이해하게 되었어요.
 
-[이미지 part: RNN vs Transformer 구조 비교 (순차적 vs 병렬적)]
-
 ---
 
 ## 2. 🌱 Transformer의 확장: 다양한 도메인 적용
 
 
 처음엔 자연어 처리(NLP)에만 쓰였지만, 이후 이미지, 오디오, 비디오, 로봇 제어 등 다양한 분야로 확장되었어요.  
+
 Transformer는 이제 모든 인공지능 분야에서 **기본 골격**처럼 사용되고 있어요.
+
 이후 설명할 ViT, CLIP, GPT-4o 같은 모델들이 모두 Transformer 기반이에요.
+
+</br> </br> </br>
 
 ---
 
 ## 3. 🌐 언어 모델 시리즈
 
+</br>
+
 ### ✅ BERT (2018, Google)
 
-- **Bidirectional Encoder Representations from Transformers**
+- **B**idirectional **E**ncoder **R**epresentations from **T**ransformers
 - 문장의 좌우 **양방향 문맥**을 모두 이해하는 모델 (좌 → 우 / 우 → 좌 동시에)
 - **Masked Language Modeling (MLM)**: 입력 문장에서 일부 단어를 [MASK] 처리하고, 나머지 부분을 통해 [MASK]를 예측
 
-> 📖 예시: "나는 [MASK]를 먹었다" → "밥", "사과", "라면" 등을 예측
+> 📖 예시: "나는 [MASK]를 먹었다" → "사과", "학교", "컴퓨터" 등을 예측
+
+
+<img width="664" height="232" alt="image" src="https://github.com/user-attachments/assets/687a6f66-091d-462c-bb85-38e86cbf11d4" />
+
+</br> </br>
 
 - 구조적으로는 **Transformer의 Encoder만 사용**함  
   → **이해 중심(task)** 작업에 특화 (문장 분류, 문장 유사도, 개체명 인식 등)
 
 > 📦 비유: 전체 문장을 앞뒤로 동시에 훑으며 정답을 추리하는 독해 고수
 
-[이미지 part: BERT가 마스크된 단어를 예측하는 모습 (양방향 문맥)]
+<img width="431" height="530" alt="image" src="https://github.com/user-attachments/assets/5dca5e0d-a006-4701-9b9b-f4798d4e54d6" />
+
+
+
+</br>
 
 ---
 
-### ✅ GPT 시리즈 (2018~2024, OpenAI)
+### ✅ GPT (2018, OpenAI)
 
 - **Generative Pre-trained Transformer**
 - 왼쪽에서 오른쪽으로 순차적으로 단어를 예측  
@@ -64,12 +80,17 @@ Transformer는 이제 모든 인공지능 분야에서 **기본 골격**처럼 �
 
 > 📖 예시: "오늘은 날씨가" → 다음 단어: 맑다 / 흐리다 / 덥다 등
 
+</br> </br>
+
 - 구조적으로는 **Transformer의 Decoder만 사용**  
   → **생성 중심(task)** 작업에 특화 (텍스트 생성, 요약, 번역, 질문답변 등)
 
 > 📦 비유: 지금까지 말한 내용을 바탕으로 다음 문장을 예측하는 소설가
 
-[이미지 part: GPT가 왼→오 방향으로 단어를 생성하는 흐름도]
+<img width="367" height="575" alt="image" src="https://github.com/user-attachments/assets/5f2578cb-dd96-46b1-a2a2-66026c8c14d6" />
+
+
+</br> </br> </br>
 
 ---
 
@@ -79,12 +100,15 @@ Transformer는 이제 모든 인공지능 분야에서 **기본 골격**처럼 �
 
 - **이미지를 패치로 쪼개어 Transformer에 입력**
 - 예: 512x512 이미지를 32x32로 자르면 16x16 = 총 256개의 패치 → 각 패치는 1개의 토큰처럼 사용
-- 각 패치는 **flatten 후 Linear Projection**을 거쳐 d차원 벡터로 변환됨
+- 각 패치는 flatten(2d 이미지를 1차원으로 펼침) 후 Linear Projection(특징을 추출함)을 거쳐 d-차원 벡터로 변환됨
 - 위치 정보 보완을 위해 **Positional Encoding** 추가
 
 > 📦 비유: 큰 퍼즐을 조각으로 잘라서 각각 의미를 이해한 후, 조합해서 전체 의미를 파악함
 
-[이미지 part: 이미지가 패치로 분해되어 Transformer에 입력되는 시각화]
+<img width="1205" height="223" alt="image" src="https://github.com/user-attachments/assets/681dc49c-d319-4306-b0d1-def41ea3a203" />
+
+
+</br> </br> </br>
 
 ---
 
@@ -100,6 +124,8 @@ Transformer는 이제 모든 인공지능 분야에서 **기본 골격**처럼 �
 
 [이미지 part: 텍스트와 이미지가 같은 공간에 매핑되는 벡터 시각화 + 양극단 contrastive loss 설명]
 
+</br>
+
 ---
 
 ### ✅ Flamingo (2022, DeepMind)
@@ -107,12 +133,16 @@ Transformer는 이제 모든 인공지능 분야에서 **기본 골격**처럼 �
 - 텍스트+이미지 입력 → 텍스트 출력
 - 예: "이 이미지에 어떤 상황이 벌어지고 있나요?" → 자동 설명 생성
 
+</br>
+
 ---
 
 ### ✅ Gato (2022, DeepMind)
 
 - 텍스트, 로봇 제어, 게임 등 다양한 작업을 하나의 모델로 처리
 - 모든 입력을 **토큰화**해서 Transformer로 처리 → 범용 인공지능(AGI)의 초기 형태
+
+</br>
 
 ---
 
@@ -122,6 +152,8 @@ Transformer는 이제 모든 인공지능 분야에서 **기본 골격**처럼 �
 - 텍스트, 이미지, 코드, 문서 요약, 표 등 다양한 입력을 동시에 처리
 - **웹 검색과 연결되어 최신 정보 반영 가능**
   
+</br>
+
 ---
 
 ### ✅ GPT-4o (2024, OpenAI)
@@ -130,6 +162,8 @@ Transformer는 이제 모든 인공지능 분야에서 **기본 골격**처럼 �
 - 실제 대화하듯 자연스러운 상호작용 가능
 
 [이미지 part: GPT-4o가 실시간으로 듣고, 보고, 말하는 시각적 예시]
+
+</br> </br> </br>
 
 ---
 
