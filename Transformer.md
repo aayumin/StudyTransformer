@@ -3,7 +3,7 @@
 ## 📚 목차
 
 1. Transformer는 왜 등장했을까? 
-2. Transformer란 무엇인가?
+2. Transformer란?
 3. 전체 구조: Encoder & Decoder
 4. Transformer의 핵심 구성요소
     - Positional Encoding
@@ -11,7 +11,7 @@
     - Cross-Attention
     - Multi-Head Attention
     - Feed Forward Layer
-    - Add & Norm (Residual + Normalization)
+    - Add & Norm
 5. Transformer 성능 및 트렌드
 
 </br> </br>
@@ -34,7 +34,7 @@
 > Transformer는 입력 문장을 **한 번에 다 보고**, 각 단어 간의 관계를 파악해서 번역하거나 문장을 생성하는 **완전한 Attention 기반 구조**입니다.
 
 - RNN처럼 순차적으로 처리하지 않고, **전체 문장을 동시에 처리**합니다.
-- 구조는 Encoder-Decoder 방식이며, **입력 → 출력**을 단계적으로 바꿔줍니다.
+
 
 비유 🔎  
 - RNN: 책을 한 줄씩 순서대로 읽는 학생  
@@ -47,23 +47,41 @@
 
 ## 🏗️ 3. 전체 구조: Encoder & Decoder
 
+<img width="454" height="517" alt="image" src="https://github.com/user-attachments/assets/2758306e-534a-450c-bcac-dc4288efb2b7" />
+
 
 Transformer는 **Encoder-Decoder** 구조를 기반으로 합니다.
 
-- **Encoder**: 입력 문장을 받아 의미(정보)를 인코딩  
-- **Decoder**: 인코딩된 정보를 활용해 출력 문장을 생성  
-
+- **Encoder**: 입력 문장을 받아 의미(정보)를 압축함  
+- **Decoder**: 압축된 정보를 활용해 출력 문장을 생성
+  
+`전체적으로 입력 내용을 압축시킨 다음, 다시 펼치는 느낌`
 
 
 ### 🧩 Encoder
 - 입력 문장을 처리하는 파트입니다.
-- 여러 개의 층으로 쌓여 있고, 각 단어 간의 관계를 **Self-Attention**으로 학습합니다.
+- 여러 개의 층으로 쌓여 있고, 각 단어 간의 관계를 **Attention**으로 학습합니다.
 
 ### 🧩 Decoder
-- Encoder의 출력을 받아서, 새로운 문장(예: 번역문)을 생성하는 파트입니다.
-- 디코더도 여러 층으로 되어 있으며, **Self-Attention + Cross-Attention** 구조를 갖습니다.
+- Encoder의 출력(=압축된 정보)을 받아서, 새로운 문장(예: 번역문)을 생성하는 파트입니다.
+- 디코더도 여러 층으로 되어 있으며, **Attention** 구조를 갖습니다.
 
 
+### 🧩 압축된 정보
+- Encoder 와 Decoder 사이에 있는 압축된 feature vector
+- Encoder 의 출력이면서, Decoder 의 입력
+- 여러 가지 명칭이 존재
+  - Context Vector
+    - 입력 문장을 하나의 압축된 벡터로 표현했기 때문에, 문맥(context)을 고려한 벡터라고 할 수 있다.
+  - Latent Vector
+    - Latent space 는 잠재공간을 의미한다.
+    - 우리가 직관적으로 보는 정보가 아니라 압축된 공간에 숨겨져 있는 정보이기 때문에 Latent vector 라고 할 수 있다.
+    - 예를 들면 원래의 정보가 [국어, 영어, 수학, 역사, 과학] 에 대해 5개의 점수를 나타낸 vector 였다고 가정해보자.
+    - 그러면 latent vector는 [국어,영어,역사의 평균 점수] 와 [수학, 과학의 평균 점수]로 정보를 압축한 vector가 될 수 있다.
+  - Feature Vector
+    - 넓은 의미에서 압축된 정보도 일종의 feature vector 이다. 다만 정보를 압축했기 때문에 어떤 특징(feature)을 묘사할지는 재구성될 수 있다.
+
+  
 </br> </br>
 
 > **이미지** 도메인에서 쓰인 Encoder-Decoder 구조
@@ -77,26 +95,33 @@ Transformer는 **Encoder-Decoder** 구조를 기반으로 합니다.
 
 ---
 
-## 🧱 4. Transformer의 구성요소
+## 🧱 4. Transformer의 핵심 구성요소
 
 </br> 
 
 ### 🔢 4-1. Positional Encoding
 > 각 단어마다 그 단어의 위치 정보까지 추가
+
 Transformer는 단어를 한꺼번에 보기 때문에, **단어 순서 정보**가 사라집니다.  
 그래서 각 단어에 **위치 정보를 더해주는 역할**을 합니다.  
-→ `나는`과 `는나`는 단어는 같아도 위치가 다르므로 의미도 달라져야 하니까요!
+→ `나는`과 `는나`는 글자들은 같아도 위치가 다르므로 의미도 달라져야 하니까요!
+
+</br> 
 
 ### 🌀 4-2. Self-Attention
-> 입력 시퀀스 내의 단어들이 서로 어떤 관련이 있는지 계산  
+> 하나의 시퀀스 내의 단어들이 서로 어떤 관련이 있는지 계산
+
 - "나는 사과를 먹었다"에서 "사과"와 "먹었다"의 연결 관계를 파악  
-- 각 단어가 다른 단어를 **참고(참조)**하며 표현을 강화
+- 각 단어가 다른 단어를 **참고(참조)** 하며 표현을 강화
 
 예: "나는 학교에 간다"라는 문장에서 "간다"는 "학교"와 더 관련이 깊죠?  
-Self-Attention은 이런 **관련성 점수**를 계산해서, **중요한 단어에 더 집중**하게 합니다.
+Self-Attention은 **하나의 문장 내에서** 이렇게 **관련성 점수**를 계산해서, **중요한 단어에 더 집중**하게 합니다.
+
+</br> 
 
 ### ↔️ 4-3 Cross-Attention
-> Decoder가 현재 번역되는 단어와, Encoder가 인코딩한 전체 입력 문장을 연결  
+> Decoder가 현재 번역되는 단어와, Encoder가 인코딩한 전체 입력 문장을 연결
+ 
 - 즉, 번역할 때 원문 문장 전체를 다시 참고  
 
 
@@ -113,24 +138,39 @@ Self-Attention 과 Cross-Attention 의 차이
   - "I am a student."라는 문장 안에서 "학생"과의 상관관계를 계산
 ```
  
-### 🧠 4-4. Multi-Head Attention
-> Self-Attention을 여러 번 병렬로 다양하게 수행하는 구조
+</br> 
 
-- 여러 시각에서 문장을 해석하는 것과 같아요.
-- 예: 어떤 Head는 문법에 집중, 다른 Head는 감정에 집중 등
-- 이 덕분에 더 풍부한 표현이 가능해집니다.
+### 🧠 4-4. Multi-Head Attention
+> Attention을 여러 번 병렬로 다양하게 수행하는 구조
+
+- 여러 시각에서 문장을 해석하는 것과 같아요. 더 풍부한 표현이 가능해집니다.
+- (예시) 어떤 Head는 문법에 집중, 다른 Head는 감정에 집중 등
+
+</br> 
+
 
 ### ⚙️ 4-5. Feed Forward Layer
-- Attention 결과를 바탕으로 **각 단어를 독립적으로 처리하는 작은 MLP(완전연결 신경망)**입니다.
-- 표현을 비선형적으로 더 복잡하게 변환합니다.
+- Attention 결과를 바탕으로 **각 단어를 독립적으로 처리하는 작은 MLP(Multi-Layer Perceptron)** 입니다.
+- MLP 란 Multi-Layer Perceptron 을 의미합니다.
+  - Perceptron은 인간의 뇌 구조에서 하나의 뉴런을 모방한 것입니다.
+  - 이러한 perceptron을 여러 층으로 겹겹이 쌓아놓으면 MLP(Multi-Layer Perceptron)라고 합니다.
+  - 주로 여러 번의 비선형적인 연산을 통해, 의미 있는 특징을 추출할 때 쓰입니다.
+
+</br> 
 
 ### 🧩 4-6. Add & Norm (잔차 연결과 정규화)
-- 각 Layer 블록은 **잔차 연결(residual connection)**을 통해 원래 입력을 더합니다.
+> Residual connection, 잔차 연결 (Add)
+
+- 각 Layer 블록은 **잔차 연결(residual connection)** 을 통해 원래 입력을 더합니다.
   - 원래는 y = f(x) 이지만, 잔차 연결을 통해 y = x + f(x) 로 계산합니다.
   - 이를 통해 학습 안정성이 강화됩니다.
+    
+> Layer normalization, 정규화 (Norm)
+
 - 그리고 **Layer Normalization**으로 학습 안정성과 속도를 향상시킵니다. (학습 시 값이 튀지 않도록 정규화)
 
-🛡️ **비유**
+> 🛡️ 비유
+
 Residual은 “원래 답안을 지우지 않고 메모를 추가”하는 것,  
 Normalization은 “모든 메모의 크기를 일정하게 정리”하는 것과 같음.
 
@@ -139,7 +179,7 @@ Normalization은 “모든 메모의 크기를 일정하게 정리”하는 것�
 
 ---
 
-## 📈 6. Transformer 성능 및 트렌드
+## 📈 5. Transformer 성능 및 트렌드
 
 ### ✅ 성능 및 효과
 - **빠름**: 병렬 연산 덕분에 GPU 성능 활용이 뛰어남
